@@ -6,7 +6,7 @@ We aim at designing a pair of smart glasses incorporating a camera module, a bat
 
 Download the zip file of this repo or clone using this command:
 
-`git clone `
+`git clone https://github.com/HaCkErBoY007/BE-Project.git`
 
 We are using numpy, imutils, pickle and cv2 libraries.
 Install these library using following commands:
