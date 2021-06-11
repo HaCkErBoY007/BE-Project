@@ -11,6 +11,10 @@ import imutils
 import pickle
 import cv2
 import time
+from gtts import gTTS
+from playsound import playsound
+
+language = 'en'
 
 # Initialize file names of object detection model
 prototxt_obj_detect = 'MobileNetSSD_deploy.prototxt.txt'
@@ -97,6 +101,11 @@ while True:
                         0.5,
                         COLORS[idx],
                         2)
+            # convert the output and save it to the audio file
+            myobj = gTTS(text=CLASSES[idx], lang=language, slow=False)
+            myobj.save("detection.mp3")
+            # Playing the converted file
+            playsound("detection.mp3")
             if CLASSES[idx] == 'person':
                 # if the detected CLASS is person then go for face recognition
                 # resize original frame (only for display puroposes)
@@ -155,6 +164,10 @@ while True:
                         # display name and confidance value above the detected face
                         cv2.putText(frame, text, (startX, y),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0))
+                        myobj_name = gTTS(text=name, lang=language, slow=False)
+                        myobj_name.save("person.mp3")
+                        # Playing the converted file
+                        playsound("person.mp3")
     cv2.imshow('Vision', frame)  # display the frame
     key = cv2.waitKey(1)  # wait for press of a key
     if key == 27:
