@@ -1,0 +1,6 @@
+gTTS==2.2.2
+imutils==0.5.4
+numpy==1.21.1
+opencv-python==4.3.0.36
+playsound==1.2.2
+scikit-learn==0.22.1
