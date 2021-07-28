@@ -16,10 +16,10 @@ Install all the required libraries using the following command:
 pip3 install -r requirements.txt
 ```
 
-Execute `vision_3.py` file using following command:
+Execute `vision.py` file using following command:
 
 ```bash
-python3 vision_3.py
+python3 vision.py
 ```
 
 Press `q` to stop the program.
