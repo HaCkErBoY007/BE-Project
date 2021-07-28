@@ -11,7 +11,7 @@ import imutils
 import pickle
 import cv2
 import time
-from gtts import gTTS
+import gtts
 from playsound import playsound
 
 language = 'en'
@@ -24,7 +24,7 @@ confThresh = 0.2
 # Initialize list of classes detected by object detection model
 CLASSES = ['background', 'aerospace', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
            'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
-           'notorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
+           'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
 # Generates random colors to be used while drawing boxes on detected onbjects
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
@@ -58,7 +58,30 @@ print('model loaded!\nstarting camera feed...')
 
 # Streaming from camera
 cap = cv2.VideoCapture(0)
-time.sleep(2.0)
+
+# Initialize the required variables for audio response
+object_detection = {'bicycle':0, 'bottle':0, 'bus':0, 'car':0, 'cat':0, 'chair':0, 'diningtable':0, 'dog':0, 'motorbike':0, 'sofa':0, 'tvmonitor':0}
+face_detections = {'crizel':0, 'elaine':0, 'sahil':0, 'siddharth':0}
+
+# Function to give audio output for each class
+def audio_object(class_name):
+    if class_name in object_detection:
+        if object_detection[class_name] == 0:
+            print(f'{class_name} detected')
+            tts = gtts.gTTS(f"{class_name} ahead")
+            tts.save(f"{class_name}.mp3")
+            playsound(f"{class_name}.mp3")
+        object_detection[class_name] += 1
+
+# function to reset after the required timers run out
+def audio_face(name):
+    if name in face_detections:
+        if face_detections[name] == 0:
+            print(f'{name} detected')
+            tts = gtts.gTTS(f"{name} ahead")
+            tts.save(f"{name}.mp3")
+            playsound(f"{name}.mp3")
+        face_detections[name] += 1
 
 while True:
     ret, frame = cap.read()             # capture frame
@@ -101,11 +124,13 @@ while True:
                         0.5,
                         COLORS[idx],
                         2)
-            # convert the output and save it to the audio file
-            myobj = gTTS(text=CLASSES[idx], lang=language, slow=False)
-            myobj.save("detection.mp3")
-            # Playing the converted file
-            playsound("detection.mp3")
+            # call audio_object to give audio output and check if any item exceeds 100 frames
+            for keys, values in object_detection.items():
+                if values == 100:
+                    object_detection[keys] = 0
+            audio_object(CLASSES[idx])
+            print(object_detection)
+            
             if CLASSES[idx] == 'person':
                 # if the detected CLASS is person then go for face recognition
                 # resize original frame (only for display puroposes)
@@ -164,10 +189,12 @@ while True:
                         # display name and confidance value above the detected face
                         cv2.putText(frame, text, (startX, y),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0))
-                        myobj_name = gTTS(text=name, lang=language, slow=False)
-                        myobj_name.save("person.mp3")
-                        # Playing the converted file
-                        playsound("person.mp3")
+                        # call audio_object to give audio output and check if any item exceeds 100 frames
+                        for keys, values in face_detections.items():
+                            if values == 100:
+                                face_detections[keys] = 0
+                            audio_face(name)
+                            print(face_detections)
     cv2.imshow('Vision', frame)  # display the frame
     key = cv2.waitKey(1)  # wait for press of a key
     if key == 27:
